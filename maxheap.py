@@ -1,61 +1,52 @@
-import math
+from math import ceil
 class MaxHeap:
 
     def __init__(self):
         self.array = []
     
     def _sift_up(self, index):
-        if self.array[index - 1] > self._parent(index):
-            parent = self._parent(index)
-            self.array[self._parent_index(index) - 1] = self.array[index - 1]
-            self.array[index - 1] = parent
-            self._sift_up(self._parent_index(index))
-    
-    def _sift_down(self, index):
-        child_indexes = self._childs_indexes(index)
-        childs = self._childs(index)
-        if childs:
-            max_child = max(childs)
-            max_child_index = child_indexes[childs.index(max_child)]
-            if self.array[index - 1] < max_child:
-                sinker = self.array[index - 1]
-                self.array[index - 1] = max_child
-                self.array[max_child_index - 1] = sinker
-                self._sift_down(max_child_index)
+        if index == 0:
+            return
+        while self.array[index] > self.array[index // 2]:
+            parent = index  // 2
+            # print('sifting up: ', self.array[index], self.array[round((index - 1) / 2)])
+            tmp = self.array[parent]
+            self.array[parent] = self.array[index]
+            self.array[index] = tmp
+            index = parent
 
-    def _childs_indexes(self, parent_index):
-        childs = []
-        try:
-            assert 2 * parent_index < len(self.array)
-            childs.append(2 * parent_index)
-            assert 2 * parent_index + 1 < len(self.array)
-            childs.append(2 * parent_index + 1)
-        finally:
-            return childs
-
-    def _childs(self, parent_index):
-        return list(map(lambda x: self.array[x - 1], self._childs_indexes(parent_index)))
-
-    def _parent_index(self, child_index):
-        if child_index == 1:
-            return 1
-        return child_index // 2
-
-    def _parent(self, child_index):
-        return self.array[self._parent_index(child_index) - 1]
+    def _sift_down(self, index=0):
+        while 2 * index + 1 < len(self.array):
+            left = 2 * index + 1
+            right = 2 * index + 2
+            j = left
+            if right < len(self.array) and self.array[right] > self.array[left]:
+                j = right
+            # print('sifting down: ', self.array[index], self.array[right], self.array[left])
+            if self.array[index] >= self.array[j]:
+                break
+            tmp = self.array[index]
+            self.array[index] = self.array[j]
+            self.array[j] = tmp
+            index = j
+                
 
     def insert(self, x):
         self.array.append(x)
-        self._sift_up(len(self.array))
+        print('inserted: ', x)
+        print('before sift up: ', self.array)
+        self._sift_up(len(self.array) - 1)
+        print('after sift up: ', self.array)
 
     def extract_max(self):
-        assert self.array
-        leaf = self.array.pop()
-        if not self.array:
-            return leaf
         maximum = self.array[0]
-        self.array[0] = leaf
-        self._sift_down(1)
+        leaf = self.array.pop()
+        if self.array:
+            self.array[0] = leaf
+        print('extracted: ', maximum)
+        print('before sift down: ', self.array)
+        self._sift_down()
+        print('after sift down: ', self.array)
         return maximum
 
     def __repr__(self):
@@ -101,7 +92,7 @@ def t_extract_max():
 
 hhh = MaxHeap()
 
-n = 100000
+n = 100
 for i in range(n):
     hhh.insert(i)
     t_insert(i)
