@@ -1,22 +1,27 @@
 import numpy as np
 from collections import deque
 
-def calculate(x, start=None, ops=0, memoize=None):
-    start = start or 1
-    memoize = memoize or [float('inf') for i in range(0, x + 1)]
-    print(x, start, ops)
-    if start > x:
-        return float('inf')
-    if memoize[start] != float('inf'):
-        return memoize[start]
-    if start * 2 <= x:
-        memoize[start * 2] = min(memoize[start * 2], calculate(x, start * 2, ops + 1, memoize))
-    if start * 3 <= x:
-        memoize[start * 3] = min(memoize[start * 3], calculate(x, start * 3, ops + 1, memoize))
-    if start + 1 <= x:
-        memoize[start + 1] = min(memoize[start + 1], calculate(x, start + 1, ops + 1, memoize))
-    memoize[start] = ops
-    return memoize[x]
+def calculate(end, start=1, memoize=None):
+    memoize = memoize or [float('inf') for i in range(0, end + 1)]
+    memoize[0] = 0
+    memoize[1] = 0
+    print(end, start)
+    if start == end:
+        print(memoize)
+        return memoize[end]
+    doubled = start * 2
+    tripled = start * 3
+    inced = start + 1
+    if doubled <= end:
+        memoize[doubled] = min(memoize[doubled], memoize[start] + 1)
+        calculate(end, doubled, memoize)
+    if tripled <= end:
+        memoize[tripled] = min(memoize[tripled], memoize[start] + 1)
+        calculate(end, tripled, memoize)
+    if inced <= end:
+        memoize[inced] = min(memoize[inced], memoize[start] + 1)
+        calculate(end, inced, memoize)
+    return memoize[end]
 
 def test():
     ops = calculate(1)
